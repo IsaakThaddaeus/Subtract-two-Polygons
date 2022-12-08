@@ -37,6 +37,26 @@ public class Polygon
 
         return outputPolygons;
     }
+    public List<List<Vector2>> addpolygon(List<Vector2> basisInpt, List<Vector2> patternInpt)
+    {
+        outputPolygons.Clear();
+
+        basisVerts = null;
+        patternVerts = null;
+
+        basisVerts = basisInpt;
+        patternVerts = patternInpt;
+
+        basis.Clear();
+        pattern.Clear();
+
+        createVertLists();
+        add();
+
+        return outputPolygons;
+    }
+
+
 
 
     void createVertLists()
@@ -278,6 +298,94 @@ public class Polygon
         increaseIndex(ref indexA, basis);
         step2();
     }
+
+
+
+    void add()
+    {
+        step1Add();
+    }
+    void step1Add()
+    {
+        if (firstUnusedOutsideVert() == true)
+        {
+            outputPolygons.Add(new List<Vector2>());
+            step2Add();
+        }
+
+    }
+    void step2Add()
+    {
+        outputPolygons[outputPolygons.Count - 1].Add(basis[indexA].position);
+        basis[indexA].processed = true;
+
+        if (outputPolygons[outputPolygons.Count - 1][0] == basis[indexA].position && outputPolygons[outputPolygons.Count - 1].Count > 1)
+        {
+
+            List<Vector2> last = outputPolygons[outputPolygons.Count - 1];
+            int lastint = last.Count - 1;
+
+            outputPolygons[outputPolygons.Count - 1].RemoveAt(lastint);
+            step1Add();
+        }
+
+        else
+        {
+            step3Add();
+        }
+
+    }
+    void step3Add()
+    {
+        if (basis[indexA].cross == -1)
+        {
+            step9Add();
+        }
+        else
+        {
+            step4Add();
+        }
+    }
+    void step4Add()
+    {
+        indexB = basis[indexA].cross;
+        step5Add();
+    }
+    void step5Add()
+    {
+        increaseIndex(ref indexB, pattern);
+        step6Add();
+    }
+    void step6Add()
+    {
+        outputPolygons[outputPolygons.Count - 1].Add(pattern[indexB].position);
+        step7Add();
+    }
+    void step7Add()
+    {
+        if (pattern[indexB].cross == -1)
+        {
+            step5Add();
+        }
+        else
+        {
+            step8Add();
+        }
+    }
+    void step8Add()
+    {
+        indexA = pattern[indexB].cross;
+        increaseIndex(ref indexA, basis);
+
+        step2Add();
+    }
+    void step9Add()
+    {
+        increaseIndex(ref indexA, basis);
+        step2Add();
+    }
+
+
 
     void increaseIndex(ref int index, List<verts> list)
     {
